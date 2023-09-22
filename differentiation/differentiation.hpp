@@ -16,10 +16,10 @@ DerivativeCoef<RealType, N> calcDerivativeCoef(const std::array<RealType, N> &po
 {
     // points - коэффициенты перед h
     // расчёт коэффициентов
-    // матрица такой слау необычная, первая строка вся из единиц, а первый столбец, кроме первого члена стостоит из нулей
-    // решим слау без первой строки и первого столбца, а центральный коэффициент рассчитаем отдельно
+    // матрица такой слау метода неопределённых коэффициентов необычная, первая строка вся из единиц, а первый столбец, 
+    // кроме первого члена стостоит из нулей. Решим слау без первой строки и первого столбца, а центральный коэффициент рассчитаем отдельно
     Eigen::Matrix<RealType, Eigen::Dynamic, Eigen::Dynamic> matrix(N, N);
-    Eigen::Vector<RealType, Eigen::Dynamic> coeff(N), ans(N);
+    Eigen::Vector<RealType, Eigen::Dynamic> coeff(N), eigAns(N);
     for (std::size_t i = 1; i < N; i++)
     {
         coeff(i) = 0;
@@ -36,12 +36,12 @@ DerivativeCoef<RealType, N> calcDerivativeCoef(const std::array<RealType, N> &po
             matrix(i, j) = matrix(i - 1, j) * (points[j]) / (i+ 1);
         }
     }
-    ans = matrix.colPivHouseholderQr().solve(coeff);
-    RealType central = -ans.sum();
-    std::array<RealType, N> answer;
+    eigAns = matrix.colPivHouseholderQr().solve(coeff);
+    RealType central = -eigAns.sum();
+    std::array<RealType, N> otherArray;
     for (std::size_t i = 0; i < N; i++)
     {
-        answer[i] = ans(i);
+        otherArray[i] = eigAns(i);
     }
-    return {central, answer};
+    return {central, otherArray};
 };

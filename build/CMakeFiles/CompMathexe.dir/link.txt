@@ -1,0 +1,1 @@
+/usr/bin/g++ -g -rdynamic CMakeFiles/CompMathexe.dir/CompMath.cpp.o -o CompMathexe 

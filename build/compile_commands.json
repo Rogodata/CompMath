@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/rogoda/cpp_projects/CompMath/build",
+  "command": "/usr/bin/g++  -isystem /usr/include/eigen3 -g -o CMakeFiles/CompMathexe.dir/CompMath.cpp.o -c /home/rogoda/cpp_projects/CompMath/CompMath.cpp",
+  "file": "/home/rogoda/cpp_projects/CompMath/CompMath.cpp"
+},
+{
+  "directory": "/home/rogoda/cpp_projects/CompMath/build/tests",
+  "command": "/usr/bin/g++  -I/home/rogoda/cpp_projects/CompMath/source/differentiation/differentiation.hpp -g -o CMakeFiles/differentiation_test.dir/differentiation_test.cpp.o -c /home/rogoda/cpp_projects/CompMath/tests/differentiation_test.cpp",
+  "file": "/home/rogoda/cpp_projects/CompMath/tests/differentiation_test.cpp"
+}
+]

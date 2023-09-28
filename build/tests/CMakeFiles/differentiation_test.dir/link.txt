@@ -1,0 +1,1 @@
+/usr/bin/g++ -g -rdynamic CMakeFiles/differentiation_test.dir/differentiation_test.cpp.o -o differentiation_test  -lgtest -lgtest_main 

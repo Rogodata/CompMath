@@ -2,7 +2,7 @@
 
 #include <array>
 #include <iostream>
-#include "../eigen-3.4.0/Eigen/Dense"
+#include <eigen3/Eigen/Dense>
 
 template <typename RealType, unsigned int N>
 struct DerivativeCoef
@@ -16,7 +16,7 @@ DerivativeCoef<RealType, N> calcDerivativeCoef(const std::array<RealType, N> &po
 {
     // points - коэффициенты перед h
     // расчёт коэффициентов
-    // матрица такой слау метода неопределённых коэффициентов необычная, первая строка вся из единиц, а первый столбец, 
+    // матрица такой слау метода неопределённых коэффициентов необычная, первая строка вся из единиц, а первый столбец,
     // кроме первого члена стостоит из нулей. Решим слау без первой строки и первого столбца, а центральный коэффициент рассчитаем отдельно
     Eigen::Matrix<RealType, Eigen::Dynamic, Eigen::Dynamic> matrix(N, N);
     Eigen::Vector<RealType, Eigen::Dynamic> coeff(N), eigAns(N);
@@ -33,7 +33,7 @@ DerivativeCoef<RealType, N> calcDerivativeCoef(const std::array<RealType, N> &po
     {
         for (std::size_t j = 0; j < N; j++)
         {
-            matrix(i, j) = matrix(i - 1, j) * (points[j]) / (i+ 1);
+            matrix(i, j) = matrix(i - 1, j) * (points[j]) / (i + 1);
         }
     }
     eigAns = matrix.colPivHouseholderQr().solve(coeff);

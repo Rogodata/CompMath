@@ -5,4 +5,4 @@ project(CompMath)
 set(CMAKE_CXX_STANDARD 23)
 
 add_library(CompMath INTERFACE)
-target_include_directories(CompMath INTERFACE differentiation/differentiation.hpp)
+target_include_directories(CompMath INTERFACE differentiation.hpp)

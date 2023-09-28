@@ -33,7 +33,8 @@ DerivativeCoef<RealType, N> calcDerivativeCoef(const std::array<RealType, N> &po
     {
         for (std::size_t j = 0; j < N; j++)
         {
-            matrix(i, j) = matrix(i - 1, j) * (points[j]) / (i + 1);
+            //Нет смысла делить строку матрицы на факториал, ведь в конце концов при решениии слау она должна оказаться нулевой
+            matrix(i, j) = matrix(i - 1, j) * (points[j]);
         }
     }
     eigAns = matrix.colPivHouseholderQr().solve(coeff);

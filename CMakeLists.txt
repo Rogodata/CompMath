@@ -3,13 +3,8 @@ project(CompMath VERSION 0.1.0 LANGUAGES C CXX)
 
 add_subdirectory(tests)
 add_subdirectory(source)
-
-add_executable(CompMathexe CompMath.cpp)
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+
+
+add_executable(CompMathexe tests/mainFiles/CompMath.cpp)
 target_link_libraries (CompMathexe Eigen3::Eigen)
-
-
-
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)

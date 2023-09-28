@@ -3,7 +3,7 @@
 #include <eigen3/Eigen/Dense>
 #include <array>
 #include <fstream>
-#include "source/differentiation/differentiation.hpp"
+#include "../../source/differentiation.hpp"
 
 
 const std::size_t N = 3;

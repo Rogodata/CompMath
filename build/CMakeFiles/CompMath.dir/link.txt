@@ -1,1 +1,0 @@
-/usr/bin/g++ -g -rdynamic CMakeFiles/CompMath.dir/CompMath.cpp.o -o CompMath  -lLIBVAR 

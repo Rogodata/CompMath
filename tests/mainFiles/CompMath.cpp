@@ -1,21 +1,28 @@
 #include <eigen3/Eigen/Dense>
 #include <array>
+#include <iomanip>
 #include <fstream>
-#include "source/differentiation/differentiation.hpp"
 #include "../../source/differentiation.hpp"
 
+const std::size_t N = 5;
 
-const std::size_t N = 3;
 int main()
 {
-    const std::size_t N = 2;
-    std::array<double, 2> hCoeff{-1, 1};
-    const double trueCentralCoeff = 0.0;
-    const std::array<double, 2> trueOtherCoeff {-0.5, 0.5};
-    DerivativeCoef<double, N> test_answer = calcDerivativeCoef<double, N>(hCoeff);
-    for (size_t i = 0; i < N; ++i)
+    std::array<double, 5> hCoeff{-1, 1, 2, 3, 4};
+    double h = 1;
+    DerivativeCoef<double, N> test_answer = calcDerivativeCoef<double, N, 2>(hCoeff);
+    for (long j = 0; j < 1e4; j++)
     {
-        std::cout << trueOtherCoeff[i] << " " <<  test_answer.otherCoefs[i] << std::endl;
+        double diff = 0;
+        h = h / 1.00369;
+        for (auto i = 0; i < N; i++)
+        {
+            diff += test_answer.otherCoefs[i] * exp(1 + hCoeff[i] * h) / h / h;
+        }
+        diff += test_answer.centralCoef * exp(1) / h / h;
+        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/differentiation/exp_2_5.txt", std::ios::app);
+        fout << std::fixed << std::setprecision(16) << (diff - exp(1) )/ exp(1) << " " << h << std::endl;
+        fout.close();
     }
     return 0;
 }

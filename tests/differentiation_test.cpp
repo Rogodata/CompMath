@@ -32,6 +32,20 @@ TEST(differentiationtest_test, Test_2)
     ASSERT_NEAR(trueCentralCoeff, test_answer.centralCoef, 1e-13);
 }
 
+TEST(differentiationtest_test, Test_3)
+{
+    const std::size_t N = 2;
+    std::array<double, 2> hCoeff{-1, 1};
+    const double trueCentralCoeff = -2;
+    const std::array<double, 2> trueOtherCoeff {1, 1};
+    DerivativeCoef<double, N> test_answer = calcDerivativeCoef<double, N, 2>(hCoeff);
+    for (size_t i = 0; i < N; ++i)
+    {
+        ASSERT_NEAR(trueOtherCoeff[i], test_answer.otherCoefs[i], 1e-13);
+    }
+    ASSERT_NEAR(trueCentralCoeff, test_answer.centralCoef, 1e-13);
+}
+
 int main(int argc, char **argv)
 {
   ::testing::InitGoogleTest(&argc, argv);

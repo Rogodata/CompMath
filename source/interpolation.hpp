@@ -30,16 +30,10 @@ public:
         {
             for (std::size_t j = N - 1; j > i; j--)
             {
-                //std::cout << i << " " << j << " " << coeffs[i] << std ::endl;
-                //std::cout << coeffs[j - 1] << " " << j << " " << coeffs[i] << std ::endl;
                 coeffs[j] = (coeffs[j] -  coeffs[j - 1]) / (points[j] - points[j - 1 - i]);
                 
             }
         }
-        /*for (auto i = 0; i < N; i++)
-        {
-            std::cout << coeffs[i] << std ::endl;
-        }*/
         
         
     };

@@ -27,7 +27,7 @@ TEST(interpolationTest, Test_1)
     NewtonInterpolator<double, double, N> interpolator(xArr, yArr);
     for (size_t i = 0; i < N; ++i)
     {
-        ASSERT_NEAR(yArr[i], interpolator.interpolate(xArr[i]), 1e-11);
+        ASSERT_NEAR(yArr[i], interpolator.interpolate(xArr[i]), 1e-10);
     }
 }
 

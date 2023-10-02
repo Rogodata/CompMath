@@ -37,12 +37,18 @@ public:
     yType interpolate(const xType &x) const noexcept
     {
         //суммируем схемой Горнера
-        yType result = coeffs[N - 1] * (x - intPoints[N-2]);
+        /*yType result = coeffs[N - 1] * (x - intPoints[N-2]);
         for (std::size_t i = N - 2; i > 0; i--)
         {
             result = (result + coeffs[i]) * (x - intPoints[i - 1]);
         }
-        result += coeffs[0];
+        result += coeffs[0];*/
+        // Но ввот так выходит точнее, ошибка на рандомных числах порядка 1е-11
+        yType result = coeffs[N - 1];
+        for (std::size_t i = N - 1; i > 0; i--)
+        {
+            result = fma(result, (x - intPoints[i - 1]), coeffs[i - 1]);
+        }
         return result;
     };
 };

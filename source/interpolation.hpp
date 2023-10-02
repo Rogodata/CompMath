@@ -24,29 +24,25 @@ public:
         {
             intPoints[i] = points[i];
         }
-        coeffs = values;
-        
+        std::copy(values.begin(), values.end(), coeffs.begin());
         for (std::size_t i = 0; i < N - 1; i++)
         {
             for (std::size_t j = N - 1; j > i; j--)
             {
-                coeffs[j] = (coeffs[j] -  coeffs[j - 1]) / (points[j] - points[j - 1 - i]);
-                
+                coeffs[j] = (coeffs[j] - coeffs[j - 1]) / (points[j] - points[j - 1 - i]);
             }
         }
-        
-        
     };
 
     yType interpolate(const xType &x) const noexcept
     {
-        yType result = coeffs[0];
-        xType mnozh = 1;
-        for (std::size_t i = 0; i < N - 1; i++)
+        //суммируем схемой Горнера
+        yType result = coeffs[N - 1] * (x - intPoints[N-2]);
+        for (std::size_t i = N - 2; i > 0; i--)
         {
-            mnozh *= x - intPoints[i];
-            result += mnozh * coeffs[i + 1];
+            result = (result + coeffs[i]) * (x - intPoints[i - 1]);
         }
+        result += coeffs[0];
         return result;
     };
 };

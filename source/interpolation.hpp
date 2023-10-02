@@ -12,7 +12,7 @@ class NewtonInterpolator
 {
 private:
     // точки, последнюю точку хранить не нужно
-    std::array<xType, N - 1> intPoints;
+    std::array<xType, N> intPoints;
     // значения разделённых разностей
     std::array<yType, N> coeffs;
 
@@ -20,11 +20,8 @@ public:
     NewtonInterpolator(const std::array<xType, N> &points, const std::array<yType, N> &values) noexcept
     {
         // конструктор подготовит коэффициенты и далее уже зная их рассчитаем значение
-        for (std::size_t i = 0; i < N - 1; i++)
-        {
-            intPoints[i] = points[i];
-        }
-        std::copy(values.begin(), values.end(), coeffs.begin());
+        intPoints = points;
+        coeffs = values;
         for (std::size_t i = 0; i < N - 1; i++)
         {
             for (std::size_t j = N - 1; j > i; j--)
@@ -43,11 +40,11 @@ public:
             result = (result + coeffs[i]) * (x - intPoints[i - 1]);
         }
         result += coeffs[0];*/
-        // Но ввот так выходит точнее, ошибка на рандомных числах порядка 1е-11
+        // Но вот так выходит точнее, ошибка на рандомных числах порядка 1е-11
         yType result = coeffs[N - 1];
         for (std::size_t i = N - 1; i > 0; i--)
         {
-            result = fma(result, (x - intPoints[i - 1]), coeffs[i - 1]);
+            result = std::fma(result, (x - intPoints[i - 1]), coeffs[i - 1]);
         }
         return result;
     };

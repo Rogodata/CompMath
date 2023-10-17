@@ -32,8 +32,21 @@ struct GaussianKvadrature<3>
 template <>
 struct GaussianKvadrature<4>
 {
-    static constexpr std::array<double, 4> points = {0.861136, 0.339981, 0.339981, 0.861136}, weights = {0.347855, 0.652145, 0.652145, 0.347855};
+    static constexpr std::array<double, 4> points = {-0.8611363, -0.339981, 0.339981, 0.8611363}, weights = {0.3478548, 0.6521451, 0.6521451, 0.3478548};
 };
+
+template <>
+struct GaussianKvadrature<5>
+{
+    static constexpr std::array<double, 5> points = {-0.9061798, -0.5384693, 0, 0.5384693, 0.9061798}, weights = {0.4786287, 0.2369269, 0.5688888, 0.2369269, 0.4786287};
+};
+
+template <>
+struct GaussianKvadrature<6>
+{
+    static constexpr std::array<double, 6> points = {-0.9324700, -0.6612094, -0.2386142, 0.2386142, 0.6612094, 0.9324700}, weights = {0.1713245, 0.3607616, 0.4679140, 0.4679140, 0.3607616, 0.1713245};
+};
+
 
 template <typename T>
 using Dif = decltype(std::declval<T>() - std::declval<T>());
@@ -69,7 +82,8 @@ decltype(auto) integrate(
     {
         result += integrate<Callable, RealType, N>(func, position, position + dx);
         position += dx;
+        
     }
-    result += integrate<Callable, RealType, N>(func, position - dx, end);
+    result += integrate<Callable, RealType, N>(func, position, end);
     return result;
 };

@@ -3,21 +3,29 @@
 #include <cmath>
 #include <iomanip>
 #include <fstream>
-#include "../../source/interpolation.hpp"
+#include "../../source/integration.hpp"
+
+double mysin(double x){
+    //return std::sin(x);
+    return std::sin(100 * x) * std::exp(-x * x) * std::cos(2 * x);
+};
 
 const int N = 3;
 
 int main()
 {
-
-    std::array<double, N> yArr{-0.2, -0.5, 0.8};
-    std::array<double, N> xArr{0.5 - sqrt(3.)/4., 0.5, 0.5 + sqrt(3.)/4.};
-    xArr[1] = 0.5;
-    for (int i =0; i < 3; i++){
-        std::cout << xArr[i] << " ";
+    double h = 3;
+    double maxErr = 0;
+    double mark = 0;
+    for (int i = 0; i < 3.5e3; i++)
+    {
+        h /= 1.0035;
+        double testAnswer = integrate<decltype(mysin), double, N>(mysin, 0, 3, h);
+        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/integrating/func_3.txt", std::ios::app);
+        fout << std::fixed << std::setprecision(16) << testAnswer  << " " << h << std::endl;
+        //fout << std::fixed << std::setprecision(16) << (testAnswer - 1.8390715290764524522) / 1.8390715290764524522  << " " << h << std::endl;
+        fout.close();
     }
-
-    NewtonInterpolator<double, double, N> interpolator(xArr, yArr);
-    //std::cout << interpolator.interpolate(0) << std::endl;
+    std::cout << h << std::endl;
     return 0;
 }

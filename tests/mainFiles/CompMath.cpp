@@ -1,4 +1,3 @@
-#include <eigen3/Eigen/Dense>
 #include <array>
 #include <iostream>
 #include <cmath>
@@ -6,32 +5,19 @@
 #include <fstream>
 #include "../../source/interpolation.hpp"
 
-const int N = 6;
+const int N = 3;
 
 int main()
 {
-    double h = 2;
-    double maxErr = 0;
-    double mark = 0;
-    for (int i = 0; i < 1e3; i++)
-    {
-        maxErr = 0;
-        mark = 0;
-        h /= 1.0035;
-        std::array<double, N> yArr{exp(0), exp(h / 5), exp(2 * h / 5), exp(3 * h / 5), exp(4 * h / 5), exp(h)};
-        std::array<double, N> xArr{0, h / 5, 2 * h / 5, 3 * h / 5, 4 * h / 5, h};
 
-        NewtonInterpolator<double, double, N> interpolator(xArr, yArr);
-        for (size_t j = 0; j < 1e4; j++)
-        {
-            double err = interpolator.interpolate((h / 1e4) * j) - exp((h / 1e4) * j);
-            if (err > maxErr)
-                maxErr = err;
-        }
-        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/interpolation/exp_6_norm.txt", std::ios::app);
-        fout << std::fixed << std::setprecision(16) << maxErr << " " << h << std::endl;
-        fout.close();
+    std::array<double, N> yArr{-0.2, -0.5, 0.8};
+    std::array<double, N> xArr{0.5 - sqrt(3.)/4., 0.5, 0.5 + sqrt(3.)/4.};
+    xArr[1] = 0.5;
+    for (int i =0; i < 3; i++){
+        std::cout << xArr[i] << " ";
     }
-    std::cout << h << std::endl;
+
+    NewtonInterpolator<double, double, N> interpolator(xArr, yArr);
+    //std::cout << interpolator.interpolate(0) << std::endl;
     return 0;
 }

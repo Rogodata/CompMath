@@ -17,15 +17,15 @@ TEST(integrationtest_test, Test_1)
     const std::size_t N = 5;
     const double trueAnswer = 1./3;
     double testAnswer = integrate<decltype(quadfunc), double, N>(quadfunc, 0, 1, 1e-5);
-    ASSERT_NEAR(trueAnswer, testAnswer, 1e-10);
+    ASSERT_NEAR(trueAnswer, testAnswer, 1e-14);
 }
 
 TEST(integrationtest_test, Test_2)
 {
-    const std::size_t N = 6;
+    const std::size_t N = 4;
     const double trueAnswer = 0;
     double testAnswer = integrate<decltype(mysin), double, N>(mysin, 0, 2 * M_PI, 0.25);
-    ASSERT_NEAR(trueAnswer, testAnswer, 1e-10);
+    ASSERT_NEAR(trueAnswer, testAnswer, 1e-14);
 }
 
 int main(int argc, char **argv)

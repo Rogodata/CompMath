@@ -21,14 +21,14 @@ int main()
         std::array<double, N> yArr{exp(0), exp(h / 5), exp(2 * h / 5), exp(3 * h / 5), exp(4 * h / 5), exp(h)};
         std::array<double, N> xArr{0, h / 5, 2 * h / 5, 3 * h / 5, 4 * h / 5, h};
 
-        NewtonInterpolator<double, double, N> interpolator(xArr, yArr);
+        HermiteInterpolator<double, double, N> interpolator(xArr, yArr, yArr);
         for (size_t j = 0; j < 1e4; j++)
         {
-            double err = interpolator.interpolate((h / 1e4) * j) - exp((h / 1e4) * j);
+            double err = std::abs(interpolator.interpolate((h / 1e4) * j) - exp((h / 1e4) * j));
             if (err > maxErr)
                 maxErr = err;
         }
-        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/interpolation/exp_6_norm.txt", std::ios::app);
+        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/interpolation/exp_6_herm.txt", std::ios::app);
         fout << std::fixed << std::setprecision(16) << maxErr << " " << h << std::endl;
         fout.close();
     }
@@ -78,5 +78,66 @@ int main()
 
     NewtonInterpolator<double, double, N> interpolator(xArr, yArr);
     //std::cout << interpolator.interpolate(0) << std::endl;
+    return 0;
+}
+
+#include <array>
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+#include <fstream>
+#include "../../source/interpolation.hpp"
+
+const int N = 3;
+
+int main()
+{
+    std::array<double, N> xArr{1, 2, 3};
+    std::array<double, N> yArr{2, 4, 8};
+    std::array<double, N> dArr{3, 1, 2};
+    HermiteInterpolator<double, double, N> interpolator(xArr, yArr, dArr);
+    
+
+    for (int i = 0; i < N; i++)
+    {
+        std::cout << interpolator.interpolate(xArr[i]) << std::endl;
+    }
+    return 0;
+}
+
+#include <array>
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+#include <fstream>
+#include "../../source/interpolation.hpp"
+
+const int N = 3;
+
+int main()
+{
+    double h = 100;
+    double maxErr = 0;
+    double mark = 0;
+    for (int i = 0; i < 1e3; i++)
+    {
+        maxErr = 0.;
+        mark = 0;
+        h /= 1.0035;
+        std::array<double, N> yArr{exp(0), exp(h / 2), exp(h)};
+        std::array<double, N> xArr{0, h / 2, h};
+
+        HermiteInterpolator<double, double, N> interpolator(xArr, yArr, yArr);
+        for (std::size_t j = 0; j < 1e4; j++)
+        {
+            double err = interpolator.interpolate((h / 1e4) * j) - exp((h / 1e4) * j);
+            if (err > maxErr)
+                maxErr = err;
+        }
+        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/interpolation/exp_3_herm.txt", std::ios::app);
+        fout << std::fixed << std::setprecision(16) << maxErr << " " << h << std::endl;
+        fout.close();
+    }
+    std::cout << h << std::endl;
     return 0;
 }

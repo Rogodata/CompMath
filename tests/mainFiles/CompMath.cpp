@@ -29,11 +29,11 @@ int main()
         CubicSpline<double, double> Spline(xArr, yArr);
         for (size_t j = 0; j < 1e4; j++)
         {
-            double err = Spline.interpolate((10. / 1e4) * j) - exp((10. / 1e4) * j);
+            double err = (Spline.interpolate((10. / 1e4) * j) - exp((10. / 1e4) * j)) / exp((10. / 1e4) * j);
             if (err > maxErr)
                 maxErr = err;
         }
-        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/spline/exp_spline.txt", std::ios::app);
+        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/spline/exp_spline_otn.txt", std::ios::app);
         fout << std::fixed << std::setprecision(16) << maxErr << " " << 10/h + 1 << std::endl;
         fout.close();
     }

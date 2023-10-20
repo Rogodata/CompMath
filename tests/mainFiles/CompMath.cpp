@@ -1,29 +1,40 @@
-#include <array>
+#include <eigen3/Eigen/Dense>
+#include <vector>
 #include <iostream>
 #include <cmath>
 #include <iomanip>
 #include <fstream>
-#include "../../source/integration.hpp"
+#include "../../source/spline.hpp"
 
-double mysin(double x){
-    return std::sin(x);
-    //return std::sin(100 * x) * std::exp(-x * x) * std::cos(2 * x);
-};
-
-const int N = 4;
+const int N = 6;
 
 int main()
 {
-    double h = 10;
+    double h = 2.5;
     double maxErr = 0;
     double mark = 0;
-    for (int i = 0; i < 1.5e3; i++)
+    for (int i = 0; i < 1e3; i++)
     {
-        h /= 1.0035;
-        double testAnswer = integrate<decltype(mysin), double, N>(mysin, 0, 10, h);
-        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/integrating/sin_4.txt", std::ios::app);
-        //fout << std::fixed << std::setprecision(16) << testAnswer  << " " << h << std::endl;
-        fout << std::fixed << std::setprecision(16) << (testAnswer - 1.8390715290764524522) / 1.8390715290764524522  << " " << h << std::endl;
+        maxErr = 0;
+        mark = 0;
+        h /= 1.0037;
+        std::vector<double> xArr, yArr;
+        xArr.resize(0);
+        yArr.resize(0);
+        for (size_t j = 0; j < 10 / h + 1; j++)
+        {
+            xArr.push_back(j * h);
+            yArr.push_back(std::exp(j*h));
+        }
+        CubicSpline<double, double> Spline(xArr, yArr);
+        for (size_t j = 0; j < 1e4; j++)
+        {
+            double err = Spline.interpolate((10. / 1e4) * j) - exp((10. / 1e4) * j);
+            if (err > maxErr)
+                maxErr = err;
+        }
+        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/spline/exp_spline.txt", std::ios::app);
+        fout << std::fixed << std::setprecision(16) << maxErr << " " << 10/h + 1 << std::endl;
         fout.close();
     }
     std::cout << h << std::endl;

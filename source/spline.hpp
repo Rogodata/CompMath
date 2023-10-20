@@ -133,15 +133,15 @@ public:
         {
             if(x <= intPoints[i])
             {
-                yType result = d[i - 1];
-                result = std::fma(result, (x - intPoints[i]), c[i - 1]);
+                yType result = d[i - 1] / 6;
+                result = std::fma(result, (x - intPoints[i]), c[i - 1] / 2);
                 result = std::fma(result, (x - intPoints[i]), b[i - 1]);
                 result = std::fma(result, (x - intPoints[i]), a[i]);
                 return result;
             }
         }
-        yType result = d[b.size() - 1];
-        result = std::fma(result, (x - intPoints[b.size()]), c[b.size() - 1]);
+        yType result = d[b.size() - 1] / 6;
+        result = std::fma(result, (x - intPoints[b.size()]), c[b.size() - 1] / 2);
         result = std::fma(result, (x - intPoints[b.size()]), b[b.size() - 1]);
         result = std::fma(result, (x - intPoints[b.size()]), a[b.size()]);
         return result;

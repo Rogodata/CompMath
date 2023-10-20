@@ -53,8 +53,11 @@ public:
     }
 };
 
-template <typename numeratorType, typename denominatorType>
+template<typename numeratorType, typename denominatorType>
 using DivisType = decltype(std::declval<numeratorType>() / std::declval<denominatorType>());
+
+template<typename Type>
+using DiffType = decltype(std::declval<Type>() - std::declval<Type>());
 
 /** Функция для решения методм  прогонки **/
 template <typename mType, typename cType>
@@ -87,7 +90,12 @@ private:
     std::vector<yType> b, c, d, a;
     std::vector<xType> intPoints;
 
+    using DeltaXType = DiffType<xType>;
+    using DerivType = DivisType<DiffType<yType>, DeltaXType>;
+    using Deriv2Type = DivisType<DiffType<DerivType>, DeltaXType>;
+
 public:
+    /*Естественный сплайн*/
     CubicSpline(const std::vector<xType> &points, // Значения x
                 const std::vector<yType> &values )// значения y
     : intPoints{points}, a(values)
@@ -127,6 +135,50 @@ public:
         }
         //теперь оно собирает векторы правильно
     };
+
+    /*сплайн с заданными значениями вторых производных*/
+    CubicSpline( const std::vector<xType> &points,  // Значения x
+                        const std::vector<yType>& values,  // значения y
+                        const Deriv2Type& first,  // значение для левой второй производной
+                        const Deriv2Type& second  // значение для правой второй производной
+                        ): intPoints{points}, a(values)
+    {
+        std::vector<yType> aCoeff, bCoeff, cCoeff;
+        aCoeff.resize(points.size() - 2);
+        bCoeff.resize(points.size() - 2 , 2);
+        cCoeff.resize(points.size() - 2);
+        b.resize(points.size() - 1);
+        c.resize(points.size() - 1);
+        d.resize(points.size() - 1);
+        //points.size() это n+1
+        for (std::size_t i = 0; i < points.size() - 3 ; i++)
+        {
+            cCoeff[i] = (points[i + 2] - points[i + 1]) / (points[i + 2] - points[i]);
+            aCoeff[i] = (points[i + 1] - points[i]) / (points[i + 2] - points[i]);
+        }
+        ThreeDiagonalMatrix<yType> matrix(aCoeff, bCoeff, cCoeff);
+        for (std::size_t i = 0; i < points.size() - 2; i++)
+        {
+            cCoeff[i] = 6 * ((values[i + 2] - values[i + 1]) / (points[i + 2] - points[i + 1]) - (values[i + 1] - values[i]) / (points[i + 1] - points[i])) / (points[i + 2] - points[i]);
+        }
+        bCoeff = solve<yType, yType>(matrix, cCoeff);
+        bCoeff.push_back(second);
+        c = bCoeff;
+        // c собрали, соберём b
+        b[0] = c[0] * (points[1] - points[0]) / 3 + (values[1] - values[0]) / (points[1] - points[0]);
+        for (std::size_t i = 1; i < points.size() - 1 ; i++)
+        {
+            b[i] = c[i] * (points[i + 1] - points[i]) / 3 + (values[i + 1] - values[i]) / (points[i + 1] - points[i]) + c[i - 1] * (points[i + 1] - points[i]) / 6;
+        }
+        // теперь d
+        d[0] = c[0] / (points[1] - points[0]) + first;
+        for (std::size_t i = 1; i < points.size() - 1; i++)
+        {
+            d[i] = (c[i] - c[i - 1]) / (points[i + 1] - points[i]);
+        }
+    };
+
+
 
     yType interpolate(const xType &x) const noexcept {
         for (std::size_t i = 1; i < b.size(); i++)

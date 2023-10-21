@@ -95,89 +95,61 @@ private:
     using Deriv2Type = DivisType<DiffType<DerivType>, DeltaXType>;
 
 public:
-    /*Естественный сплайн*/
-    CubicSpline(const std::vector<xType> &points, // Значения x
-                const std::vector<yType> &values )// значения y
-    : intPoints{points}, a(values)
-    {
-        std::vector<yType> aCoeff, bCoeff, cCoeff;
-        aCoeff.resize(points.size() - 2);
-        bCoeff.resize(points.size() - 2 , 2);
-        cCoeff.resize(points.size() - 2);
-        b.resize(points.size() - 1);
-        c.resize(points.size() - 1);
-        d.resize(points.size() - 1);
-        //points.size() это n+1
-        for (std::size_t i = 0; i < points.size() - 3 ; i++)
-        {
-            cCoeff[i] = (points[i + 2] - points[i + 1]) / (points[i + 2] - points[i]);
-            aCoeff[i] = (points[i + 1] - points[i]) / (points[i + 2] - points[i]);
-        }
-        ThreeDiagonalMatrix<yType> matrix(aCoeff, bCoeff, cCoeff);
-        for (std::size_t i = 0; i < points.size() - 2; i++)
-        {
-            cCoeff[i] = 6 * ((values[i + 2] - values[i + 1]) / (points[i + 2] - points[i + 1]) - (values[i + 1] - values[i]) / (points[i + 1] - points[i])) / (points[i + 2] - points[i]);
-        }
-        bCoeff = solve<yType, yType>(matrix, cCoeff);
-        bCoeff.push_back(0);
-        c = bCoeff;
-        // c собрали, соберём b
-        b[0] = c[0] * (points[1] - points[0]) / 3 + (values[1] - values[0]) / (points[1] - points[0]);
-        for (std::size_t i = 1; i < points.size() - 1 ; i++)
-        {
-            b[i] = c[i] * (points[i + 1] - points[i]) / 3 + (values[i + 1] - values[i]) / (points[i + 1] - points[i]) + c[i - 1] * (points[i + 1] - points[i]) / 6;
-        }
-        // теперь d
-        d[0] = c[0] / (points[1] - points[0]);
-        for (std::size_t i = 1; i < points.size() - 1; i++)
-        {
-            d[i] = (c[i] - c[i - 1]) / (points[i + 1] - points[i]);
-        }
-        //теперь оно собирает векторы правильно
-    };
-
     /*сплайн с заданными значениями вторых производных*/
     CubicSpline( const std::vector<xType> &points,  // Значения x
                         const std::vector<yType>& values,  // значения y
                         const Deriv2Type& first,  // значение для левой второй производной
                         const Deriv2Type& second  // значение для правой второй производной
                         ): intPoints{points}, a(values)
-    {
-        std::vector<yType> aCoeff, bCoeff, cCoeff;
-        aCoeff.resize(points.size() - 2);
-        bCoeff.resize(points.size() - 2 , 2);
-        cCoeff.resize(points.size() - 2);
-        b.resize(points.size() - 1);
-        c.resize(points.size() - 1);
-        d.resize(points.size() - 1);
+    {   
+        std::vector<DiffType<xType>> hValues;
+        std::vector<DiffType<yType>> uValues;
+        b.resize(points.size() - 2);
+        c.resize(points.size() - 2 , 2);
+        d.resize(points.size() - 2);
+        hValues.resize(points.size() - 1);
+        uValues.resize(points.size() - 1);
+        for (size_t i = 0; i < points.size() - 1; i++)
+        {
+            hValues[i] = points[i+1] - points[i];
+        }
+        for (size_t i = 0; i < points.size() - 1; i++)
+        {
+            uValues[i] = values[i+1] - values[i];
+        }
         //points.size() это n+1
         for (std::size_t i = 0; i < points.size() - 3 ; i++)
         {
-            cCoeff[i] = (points[i + 2] - points[i + 1]) / (points[i + 2] - points[i]);
-            aCoeff[i] = (points[i + 1] - points[i]) / (points[i + 2] - points[i]);
+            d[i] = hValues[i + 1] / (points[i + 2] - points[i]);
+            b[i] = hValues[i] / (points[i + 2] - points[i]);
         }
-        ThreeDiagonalMatrix<yType> matrix(aCoeff, bCoeff, cCoeff);
+        ThreeDiagonalMatrix<yType> matrix(b, c, d);
         for (std::size_t i = 0; i < points.size() - 2; i++)
         {
-            cCoeff[i] = 6 * ((values[i + 2] - values[i + 1]) / (points[i + 2] - points[i + 1]) - (values[i + 1] - values[i]) / (points[i + 1] - points[i])) / (points[i + 2] - points[i]);
+            d[i] = 6 * (uValues[i+1] / hValues[i+1] - uValues[i] / hValues[i]) / (points[i + 2] - points[i]);
         }
-        bCoeff = solve<yType, yType>(matrix, cCoeff);
-        bCoeff.push_back(second);
-        c = bCoeff;
+        c = solve<yType, yType>(matrix, d);
+        c.push_back(second);
         // c собрали, соберём b
-        b[0] = c[0] * (points[1] - points[0]) / 3 + (values[1] - values[0]) / (points[1] - points[0]);
+        b.resize(points.size() - 1);
+        b[0] = c[0] * hValues[0] / 3 + uValues[0] / hValues[0];
         for (std::size_t i = 1; i < points.size() - 1 ; i++)
         {
-            b[i] = c[i] * (points[i + 1] - points[i]) / 3 + (values[i + 1] - values[i]) / (points[i + 1] - points[i]) + c[i - 1] * (points[i + 1] - points[i]) / 6;
+            b[i] = c[i] * hValues[i] / 3 + uValues[i] / hValues[i] + c[i - 1] * hValues[i] / 6;
         }
         // теперь d
-        d[0] = c[0] / (points[1] - points[0]) + first;
+        d.resize(points.size() - 1);
+        d[0] = c[0] / hValues[0] + first;
         for (std::size_t i = 1; i < points.size() - 1; i++)
         {
-            d[i] = (c[i] - c[i - 1]) / (points[i + 1] - points[i]);
+            d[i] = (c[i] - c[i - 1]) / hValues[i];
         }
     };
 
+    /*Естественный сплайн*/
+    CubicSpline(const std::vector<xType> &points, // Значения x
+                const std::vector<yType> &values )// значения y
+        : CubicSpline(points, values, 0, 0) {};
 
 
     yType interpolate(const xType &x) const noexcept {

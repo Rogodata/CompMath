@@ -4,24 +4,21 @@
 #include <iomanip>
 #include <fstream>
 #include "../../source/nonlinear.hpp"
+#include <eigen3/Eigen/Dense>
 
-const int N = 6;
+Eigen::Matrix<double, 1, 2> myfunc(Eigen::Matrix<double, 1, 2> &pair)
+{
+    Eigen::Matrix<double, 1, 2> result(pair(0, 0) * pair(0, 0) + pair(0, 1) * pair(0, 1) - 1, std::tan(pair(0, 0)) - pair(0, 1));
+    return result;
+};
 
 int main()
 {   
-    double E_true = 1.5853138613542082;
-    std::size_t maxIter = 200;
-    double e = 0.8;
-    double m = M_PI / 4;
-    double prev = m, curr;
-    for (std::size_t i = 1; i < maxIter; i++)
-    {
-        curr = prev - (prev - e * std::sin(prev) - m) / (1 - e * std::cos(prev));
-        prev = curr;
-        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/nonlinear/kepler8.txt", std::ios::app);
-        fout << std::fixed << std::setprecision(16) << curr - E_true  << " " << i << std::endl;
-        fout.close();
-    }
-    
+    //два решения: одно решение в первой четверти, а второе - в третьей четверти координатной плоскости
+    Eigen::Matrix<double, 1, 2> initial1(1. / 2, 1 / 2), initial2(-1. / 2, -1. / 2);
+    Eigen::Matrix<double, 1, 2> answer1 = solve<decltype(myfunc), double>(myfunc, 1./4, initial1, 80);
+    std::cout << std::setprecision(16) << answer1 << " " << std::endl;
+    Eigen::Matrix<double, 1, 2> answer2 = solve<decltype(myfunc), double>(myfunc, 1./4., initial2, 80);
+    std::cout << std::setprecision(16) << answer2 << " " << std::endl;
     return 0;
 }

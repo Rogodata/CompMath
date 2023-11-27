@@ -40,6 +40,9 @@ struct ArgumentGetter<R(Arg)>
     using Argument = Arg;
 };
 
+template <typename T>
+using Dif = decltype(std::declval<T>() - std::declval<T>());
+
 template <typename Callable, typename RealType>
 decltype(auto) solve(
     const Callable &func,                                            // функция F
@@ -47,7 +50,7 @@ decltype(auto) solve(
     const typename ArgumentGetter<Callable>::Argument &initialGuess, // начальное приближение
     const unsigned int nIteration                                    // количество итераций
 ){
-    double prev = initialGuess, curr;
+    typename ArgumentGetter<Callable>::Argument prev = initialGuess, curr = initialGuess;
     for (std::size_t i = 0; i < nIteration; i++)
     {
         curr = prev + tau * func(prev);

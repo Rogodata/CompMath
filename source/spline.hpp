@@ -6,20 +6,10 @@
 template <typename RealType>
 struct Row
 {
-    Row()
-    {
-        // default constructor
-        a = 0;
-        b = 0;
-        c = 0;
-    };
+    Row() = default;
 
-    Row(RealType a, RealType b, RealType c)
+    Row(RealType a, RealType b, RealType c) : a(a), b(b), c(c)
     {
-        // constructor with parameters
-        this->a = a;
-        this->b = b;
-        this->c = c;
     };
 
     RealType a, b, c;

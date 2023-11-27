@@ -8,7 +8,8 @@
 TEST(tridiagonal_test, Test_1)
 {
     std::vector<double> column = {1, 2, 3}, trueAnswer = {-13. / 17, 15. / 17, 7. / 17};
-    ThreeDiagonalMatrix<double> matrix({3, 2}, {1, 3, 3}, {2, 4});
+    std::vector<double> a = {3., 2.}, b = {1., 2., 3.}, c = {2., 4.};
+    ThreeDiagonalMatrix<double> matrix(a, b, c);
     std::vector<double> testAnswer = solve(matrix, column);
     for (size_t i = 0; i < 3; i++)
     {

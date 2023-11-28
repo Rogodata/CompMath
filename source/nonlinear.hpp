@@ -1,6 +1,7 @@
 #pragma once
 
 #include<iostream>
+#include <type_traits>
 #include <cmath>
 #include <exception>
 
@@ -46,15 +47,29 @@ using Dif = decltype(std::declval<T>() - std::declval<T>());
 template <typename Callable, typename RealType>
 decltype(auto) solve(
     const Callable &func,                                            // функция F
-    const RealType &tau,                                             // шаг тау
-    const typename ArgumentGetter<Callable>::Argument &initialGuess, // начальное приближение
+    const RealType tau,                                             // шаг тау
+    const typename ArgumentGetter<Callable>::Argument& initialGuess, // начальное приближение
     const unsigned int nIteration                                    // количество итераций
 ){
-    typename ArgumentGetter<Callable>::Argument prev = initialGuess, curr = initialGuess;
+    typename std::decay_t<typename ArgumentGetter<Callable>::Argument> curr= initialGuess;
     for (std::size_t i = 0; i < nIteration; i++)
     {
-        curr = prev + tau * func(prev);
-        prev = curr;    
+        curr += tau * func(curr);
     }
     return curr;
 };
+
+template <typename Callable, typename RealType>
+decltype(auto) solve(
+    const Callable &func,                                            // функция F
+    const typename ArgumentGetter<Callable>::Argument &initialGuess, // начальное приближение
+    const unsigned int nIteration                                    // количество итераций
+){
+    typename std::decay_t<typename ArgumentGetter<Callable>::Argument> curr= initialGuess;
+    for (std::size_t i = 0; i < nIteration; i++)
+    {
+        curr = func(curr);  
+    }
+    return curr;
+};
+

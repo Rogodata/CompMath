@@ -1,40 +1,26 @@
+
+#include <eigen3/Eigen/Dense>
+#include <array>
 #include <vector>
-#include <iostream>
-#include <cmath>
 #include <iomanip>
 #include <fstream>
-#include "../../source/nonlinear.hpp"
-#include <eigen3/Eigen/Dense>
+#include <iostream>
+#include "../../source/RungeKutta.hpp"
 
-Eigen::Matrix<double, 1, 2> myfunc(const Eigen::Matrix<double, 1, 2> &pair)
-{
-    Eigen::Matrix<double, 1, 2> result(-pair(0, 0) * pair(0, 0) - pair(0, 1) * pair(0, 1) + 1, -std::tan(pair(0, 0)) + pair(0, 1));
-    return result;
-};
-
-Eigen::Matrix<double, 1, 2> myfunc1(const Eigen::Matrix<double, 1, 2> &pair)
-{
-    Eigen::Matrix<double, 1, 2> result(pair(0, 0) * pair(0, 0) + pair(0, 1) * pair(0, 1) - 1 + pair(0, 0), std::tan(pair(0, 0)));
-    return result;
-};
-
-Eigen::Matrix<double, 1, 2> myfunc2(const Eigen::Matrix<double, 1, 2> &pair)
-{
-    Eigen::Matrix<double, 1, 2> result(pair(0, 0) * pair(0, 0) + pair(0, 1) * pair(0, 1) - 1, -std::tan(pair(0, 0)) + pair(0, 1));
-    return result;
-};
+const std::size_t N = 1;
 
 int main()
-{
-    // два решения: одно решение в первой четверти, а второе - в третьей четверти координатной плоскости
-    const Eigen::Matrix<double, 1, 2> initial1(1. / 2, 1. / 2), initial2(-1. / 2, -1. / 2);
-    Eigen::Matrix<double, 1, 2> answer1 = solve<decltype(myfunc), double>(myfunc, -1. / 4, initial1, 80);
-    std::cout << std::setprecision(16) << answer1 << " " << std::endl;
-    Eigen::Matrix<double, 1, 2> answer2 = solve<decltype(myfunc), double>(myfunc, -1. / 4., initial2, 80);
-    std::cout << std::setprecision(16) << answer2 << " " << std::endl;
-    Eigen::Matrix<double, 1, 2> answer5 = solve<decltype(myfunc), double>(myfunc2, -1. / 4, initial1, 80);
-    std::cout << std::setprecision(16) << answer5 << " " << std::endl;
-    Eigen::Matrix<double, 1, 2> answer6 = solve<decltype(myfunc), double>(myfunc2, -1. / 4, initial2, 80);
-    std::cout << std::setprecision(16) << answer6 << " " << std::endl;
+{   
+    Oscillator osc1;
+    FirstTask task;
+    RK4Table table;
+    
+    std::vector<Oscillator::StateAndArg> test1 = integrate<RK4Table, Oscillator>(Oscillator::StateAndArg{Eigen::Vector<double, 2>{0, 1.}, double (0)}, 5, table, 0.002, osc1);
+    for(const auto &element : test1)
+    {
+        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/RungeKutta/test.txt", std::ios::app);
+        fout << std::fixed << std::setprecision(16) << element.state[0] << " " << element.arg << std::endl;
+        fout.close();
+    }
     return 0;
 }

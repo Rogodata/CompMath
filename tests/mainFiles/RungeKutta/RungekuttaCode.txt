@@ -1,0 +1,104 @@
+
+#include <eigen3/Eigen/Dense>
+#include <array>
+#include <vector>
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include "../../source/RungeKutta.hpp"
+
+const std::size_t N = 1;
+
+int main()
+{   
+    Oscillator osc1;
+    FirstTask task;
+    RK4Table table;
+    
+    std::vector<Oscillator::StateAndArg> test1 = integrate<RK4Table, Oscillator>(Oscillator::StateAndArg{Eigen::Vector<double, 2>{1., 0}, double (0)}, 10, table, 1, osc1);
+    std::vector<FirstTask::StateAndArg> test2 = integrate<RK4Table, FirstTask>(FirstTask::StateAndArg{0, 0}, 5, table, 0.25, task);
+    for(const auto &element : test2)
+    {
+        std::cout << element.state << " " << element.arg << std::endl;
+    }
+    return 0;
+}
+
+
+#include <eigen3/Eigen/Dense>
+#include <array>
+#include <vector>
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include "../../source/RungeKutta.hpp"
+
+const std::size_t N = 1;
+
+int main()
+{
+    Oscillator osc1;
+    FirstTask task;
+    RK4Table table;
+    double h = 1000;
+    double maxErr = 0;
+    double mark = 0;
+    for (int i = 0; i < 1e3; i++)
+    {
+        maxErr = 0.;
+        h /= 1.0065;
+        std::vector<FirstTask::StateAndArg> test2 = integrate<RK4Table, FirstTask>(FirstTask::StateAndArg{0, 0}, 1000, table, h, task);
+        for (const auto &element : test2)
+        {
+            // if (std::abs((element.arg * element.arg *element.arg *element.arg / 4) - element.state) / (element.arg * element.arg *element.arg *element.arg / 4)  > maxErr)
+            // {
+            //     maxErr = std::abs((element.arg * element.arg *element.arg *element.arg / 4) - element.state)  / (element.arg * element.arg *element.arg *element.arg / 4);
+            // } 
+            maxErr = std::abs((element.arg * element.arg *element.arg *element.arg / 4) - element.state)  / (element.arg * element.arg *element.arg *element.arg / 4);
+        }
+        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/RungeKutta/task1.txt", std::ios::app);
+        fout << std::fixed << std::setprecision(16) << maxErr << " " << h << std::endl;
+        fout.close();
+    }
+    std::cout << h << std::endl;
+    return 0;
+
+
+#include <eigen3/Eigen/Dense>
+#include <array>
+#include <vector>
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include "../../source/RungeKutta.hpp"
+
+const std::size_t N = 1;
+
+int main()
+{
+    Oscillator osc1;
+    FirstTask task;
+    RK4Table table;
+    double h = 5;
+    double maxErr = 0;
+    double mark = 0;
+    for (int i = 0; i < 1e3; i++)
+    {
+        maxErr = 0.;
+        h /= 1.0065;
+        std::vector<Oscillator::StateAndArg> test1 = integrate<RK4Table, Oscillator>(Oscillator::StateAndArg{Eigen::Vector<double, 2>{0, 1.}, double (0)}, 5, table, h, osc1);
+        for (const auto &element : test1)
+        {   
+            std::cout << element.state[0] << " " << element.arg << std::endl;
+            if (std::abs(std::sin(element.arg) - element.state[0])  > maxErr)
+            {
+                maxErr = std::abs(std::sin(element.arg) - element.state[0]);
+            } 
+        }
+        std::ofstream fout("/home/rogoda/cpp_projects/CompMath/tests/mainFiles/RungeKutta/task2.txt", std::ios::app);
+        fout << std::fixed << std::setprecision(16) << maxErr << " " << h << std::endl;
+        fout.close();
+    }
+    std::cout << h << std::endl;
+    return 0;
+}

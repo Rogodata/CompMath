@@ -16,9 +16,9 @@ def ugolok(beginProections, timeStopCoord, CFLnum, hParameter, dtauParam=1):
     currProections = beginProections.copy()
     tauParameter = CFLnum * hParameter
     currTime = 0
-    prevProection = currProections[0]
     countParameter = 0
     while currTime < timeStopCoord:
+        prevProection = currProections[0]
         for j in range(1, len(beginProections)):
             newProection = currProections[j]
             currProections[j] = currProections[j] * (1 - CFLnum) + CFLnum * prevProection
@@ -28,7 +28,7 @@ def ugolok(beginProections, timeStopCoord, CFLnum, hParameter, dtauParam=1):
         print("iteration")
         countParameter += 1
         if countParameter >= dtauParam:
-            with open("ug1.txt", "a") as f:
+            with open("ug105.txt", "a") as f:
                 for point in currProections:
                     f.write(str(point) + " ")
                 f.write("\n")
@@ -42,9 +42,9 @@ def laxVendroff(beginProections, timeStopCoord, CFLnum, hParameter, dtauParam=1)
     currProections = beginProections.copy()
     tauParameter = CFLnum * hParameter
     currTime = 0
-    prevProection = currProections[0]
     countParameter = 0
     while currTime < timeStopCoord:
+        prevProection = currProections[0]
         firstProection = currProections[1]
         currProections[0] = currProections[0] * (1 - CFLnum * CFLnum) + (- CFLnum / 2 + CFLnum * CFLnum / 2) * \
                             currProections[1] + currProections[-2] * (CFLnum / 2 + CFLnum * CFLnum / 2)
@@ -72,11 +72,11 @@ def laxVendroff(beginProections, timeStopCoord, CFLnum, hParameter, dtauParam=1)
 
 proections = buildProections(0.5, 40, myFunc)
 print(proections)
-with open("ug1.txt", "a") as f:
+with open("ug105.txt", "a") as f:
     for point in proections:
         f.write(str(point) + " ")
     f.write("\n")
     f.write("0")
     f.write("\n")
 
-print(ugolok(proections, 15, 1, 0.5, dtauParam=3))
+print(ugolok(proections, 40, 1.05, 0.5, dtauParam=8))

@@ -1,6 +1,7 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-FILENAME = "HGup1.txt"
+FILENAME = "HGudarnaya.txt"
 
 def myFunc(x_parameter):
     return np.sin((4 * np.pi * x_parameter) / (20))
@@ -12,6 +13,16 @@ def buildProections(firsQuant, secondQuant, stair, size):
         proectionsArray.append(firsQuant)
     for i in range(size - stair):
         proectionsArray.append(secondQuant)
+    return proectionsArray
+
+def buildPProections(firsQuant, secondQuant, stairUp, stairDn, size):
+    proectionsArray = []
+    for i in range(stairUp):
+        proectionsArray.append(firsQuant)
+    for i in range(stairDn - stairUp):
+        proectionsArray.append(secondQuant)
+    for i in range(size - stairDn):
+        proectionsArray.append(firsQuant)
     return proectionsArray
 
 
@@ -56,29 +67,41 @@ def hopfGodunov(beginProections, hParameter, tauParameter, endTime, dtauParam=1)
             prevProection = newProection
         #currProections[-1] = 0
         currTime += tauParameter
-        print("iteration")
         countParameter += 1
-        if countParameter >= dtauParam:
+        """if countParameter >= dtauParam:
             with open(FILENAME, "a") as f:
                 for point in currProections:
                     f.write(str(point) + " ")
                 f.write("\n")
-                """f.write(str(currTime))
-                f.write("\n")"""
+                f.write(str(currTime))if countParameter >= dtauParam:
+            with open(FILENAME, "a") as f:
+                for point in currProections:
+                    f.write(str(point) + " ")
+                f.write("\n")
+                f.write(str(currTime))
+                f.write("\n")
             countParameter = 0
+                f.write("\n")
+            countParameter = 0"""
         proectionsMesh.append(currProections.copy())
     return proectionsMesh
 
 
-proections = [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0]
-proectionsDown = buildProections(6, 1, 5, 36)
-proections.reverse()
-print(len(proectionsDown))
-with open(FILENAME, "a") as f:
-    for point in proectionsDown:
-        f.write(str(point) + " ")
-    f.write("\n")
-    """f.write("0")
-    f.write("\n")
-"""
-print(hopfGodunov(proectionsDown, 1,0.1, 5, dtauParam=1))
+proections = [0,0,0,0,0,0,0,0,0,0,0,6,6,6,6,6,6,6,6,6,6,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0]
+proectionsDown = buildPProections(0, 6, 75, 210, 1350)
+
+
+fig, ax = plt.subplots(figsize=(16, 9))
+
+z = hopfGodunov(proectionsDown, 0.06,0.006, 60, dtauParam=1)
+x = np.linspace(0, 50, 1350)
+t = np.linspace(0, 60, 10001)
+
+ax.pcolormesh(x, t, z)
+ax.set_xlabel('x', loc='center', fontsize=10)
+ax.set_ylabel('t', loc='center', fontsize=10)
+ax.set_title('tau =0.006, h=0.06', loc='center', fontsize=15)
+
+fig.savefig("HGudarnaya5060.png", dpi=500)
+
+plt.show()

@@ -28,7 +28,7 @@ def ugolok(beginProections, timeStopCoord, CFLnum, hParameter, dtauParam=1):
         print("iteration")
         countParameter += 1
         if countParameter >= dtauParam:
-            with open("ug105.txt", "a") as f:
+            with open("../tests/mainFiles/ugolokVendroff/ug105.txt", "a") as f:
                 for point in currProections:
                     f.write(str(point) + " ")
                 f.write("\n")
@@ -60,7 +60,7 @@ def laxVendroff(beginProections, timeStopCoord, CFLnum, hParameter, dtauParam=1)
         print("iteration")
         countParameter += 1
         if countParameter >= dtauParam:
-            with open("LV1.txt", "a") as f:
+            with open("../tests/mainFiles/ugolokVendroff/LV1.txt", "a") as f:
                 for point in currProections:
                     f.write(str(point) + " ")
                 f.write("\n")
@@ -72,7 +72,7 @@ def laxVendroff(beginProections, timeStopCoord, CFLnum, hParameter, dtauParam=1)
 
 proections = buildProections(0.5, 40, myFunc)
 print(proections)
-with open("ug105.txt", "a") as f:
+with open("../tests/mainFiles/ugolokVendroff/ug105.txt", "a") as f:
     for point in proections:
         f.write(str(point) + " ")
     f.write("\n")
